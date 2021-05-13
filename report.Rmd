@@ -1,0 +1,222 @@
+---
+title: "KHẢO SÁT NHU CẦU SỬ DỤNG CÀ PHÊ VIỆT NAM"
+author: "Thành 10 ngón"
+output:
+  html_document: default
+---
+Bộ dữ liệu này chứa 1306 cá nhân và 261 biến, được phân thành 3 nhóm chính để phân tích
+
+Nhóm 1: Chứa thông tin cá nhân của người được khảo sát và thông tin liên quan đến cà phê RANG XAY.
+
+Nhóm 2: Chứa thông tin cá nhân của người được khảo sát và thông tin liên quan đến cà phê HÒA TAN 2IN1
+
+Nhóm 3: Chứa thông tin cá nhân của người được khảo sát và thông tin liên quan đến cà phê HÒA TAN 3IN1
+- - -
+
+# I. Mô tả phương pháp phân tích.
+
+Phân tích đa tương ứng (MCA) là một phần mở rộng của CA đơn giản để phân tích một bảng dữ liệu có chứa nhiều hơn hai biến phân loại.
+
+MCA thường được sử dụng để phân tích dữ liệu từ cuộc khảo sát.
+
+Các mục tiêu là xác định:
+
+Một nhóm các cá nhân có hồ sơ tương tự trong câu trả lời của họ cho các câu hỏi
+Mối liên hệ giữa các biến categories
+
+# II. Tiến hành phân tích
+
+## 1. Tiền xử lý
+### Tải các thư viện liên quan
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+library(factoextra)
+library(FactoMineR)
+library(Factoshiny)
+library(readxl)
+```
+
+### Nạp dữ liệu
+```{r message=FALSE, warning=FALSE}
+dataset <- read_excel("D:/school/master-prog-1/analysis-processing-multiD-data/ASSIGNMENT/dataset.xlsx")
+#colnames(dataset)
+
+```
+
+
+## Tiến hành phân tích trên nhóm 1
+
+### Mô tả dữ liệu nhóm 1
+
+Dữ liệu nhóm 1 bao gồm 1306 cá nhân và 61 biến thông tin về cá nhân và cà phê RANG XAY.
+
+Trong 61 biến:
+  --- Biến định lượng bổ sung: `Độ tuổi`
+
+  --- Biến định tính bổ sung: các biến liên quan đến những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê, mức độ yêu thích của người tiêu dùng đối với sản phẩm và đặc tính của cà phê
+  
+  --- Biến kích hoạt: các biến còn lại được sử dụng làm biến kích hoạt
+  
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+dataset.group1 <- dataset[c(2:47, 51:63,67:68)]
+
+ncol(dataset.group1)
+dim(dataset.group1)
+
+cols <- c(1,3:ncol(dataset.group1))
+dataset.group1[cols] <-lapply(dataset.group1[cols], factor)
+dataset.group1[2] <- as.numeric(unlist(dataset.group1[2]))
+
+res.mca.group1 <- MCA(dataset.group1,quanti.sup = 2,quali.sup=c(1,16:25,31:59),graph=FALSE)
+
+```
+
+### Tóm tắt kết quả đầu ra MCA của nhóm 1
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#(res.mca.group1,nb.dec=2,ncp=2)
+```
+
+Kết quả của hàm summary chứa 4 bảng:
+
+--- **Bảng 1** - Giá trị riêng: bảng 1 chứa các phương sai và tỷ lệ phần trăm phương sai được giữ lại theo từng thứ nguyên.
+
+--- **Bảng 2** chứa tọa độ, đóng góp và cos2 (chất lượng đại diện [trong 0-1]) của 10 cá nhân hoạt động đầu tiên trên các chiều 1 và 2.
+
+--- **Bảng 3** chứa tọa độ, đóng góp và cos2 (chất lượng đại diện [trong 0-1]) của 10 biến kích hoạt categories đầu tiên trên các chiều 1 và 2. Bảng này cũng chứa một cột được gọi là v.test. Giá trị của v.test thường bao gồm từ 2 đến -2. Đối với một biến category cho trước, nếu giá trị tuyệt đối của v.test cao hơn 2, điều này có nghĩa là tọa độ khác 0 đáng kể.
+
+--- **Bảng 4** - các biến phân loại (eta2): chứa mối tương quan bình phương giữa mỗi biến và chiều.
+
+
+### Giải thích kết quả đầu ra MCA cho nhóm 1
+
+```{r}
+eigenvalue.group1 <- get_eigenvalue(res.mca.group1)
+head(round(eigenvalue.group1, 2))
+
+```
+
+
+### Ta có thể vẽ minh họa scree
+```{r}
+fviz_screeplot(res.mca.group1)
+```
+
+
+### Biểu đồ phân tán MCA: Biplot của các cá nhân và biến categories
+
+
+
+
+### Biến categories
+```{r}
+var.group1 <- get_mca_var(res.mca.group1)
+```
+### Tương quan giữa các biến và các thành phần chính
+
+
+```{r}
+fviz_mca_var(res.mca.group1, select.var=list(contrib=10),repel=TRUE,col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), ggtheme = theme_minimal())
+
+```
+
+Biểu đồ trên giúp xác định các biến có tương quan nhất với mỗi chiều. Tương quan bình phương giữa các biến và các chiều được sử dụng làm tọa độ.
+
+Có thể thấy rằng, các biến `Giá rẻ hơn nước ép`, `Sở thích, Thói quen/ Nghiện cà phê, Hỗ trợ công việc (Kích thích tỉnh táo, tập trung,…)` và `Không gian phù hợp` có tương quan nhiều nhất với chiều 1. Tương tự, các biến  `Giá rẻ hơn nước ép` và `Sở thích, Thói quen/ Nghiện cà phê, Hỗ trợ công việc (Kích thích tỉnh táo, tập trung,…)` có tương quan nhiều nhất với chiều 2.
+
+Biểu đồ trên cho thấy một mẫu chung trong dữ liệu. Hàng (cá nhân) được biểu thị bằng các điểm màu xanh lam và cột (biến category) bằng hình tam giác màu đỏ.
+
+Khoảng cách giữa bất kỳ điểm hàng hoặc điểm cột nào cho phép đo mức độ giống nhau (hoặc không giống nhau) của chúng.
+
+Các điểm hàng có cấu hình tương tự được đóng trên bản đồ yếu tố. Điều này cũng đúng đối với các điểm cột.
+
+
+
+
+### Tọa độ của các biến categories
+
+```{r}
+head(round(var.group1$coord,2))
+
+```
+
+
+```{r}
+fviz_mca_var(res.mca.group1, col.var="black", shape.var = 15,select.var=list(contrib=20),repel=TRUE)
+```
+
+### Đóng góp của các biến categories vào các chiều
+
+```{r}
+head(round(var.group1$contrib,2))
+```
+
+
+```{r}
+categories <- rownames(var.group1$coord)
+length(categories)
+```
+
+Mức độ đóng góp của mỗi biến categories trên chiều thứ nhất
+
+```{r echo=FALSE, message=FALSE, warning=FALSE }
+fviz_contrib(res.mca.group1, choice = "var", axes = 1, top = 5)
+```
+
+
+Mức độ đóng góp của mỗi biến categories trên chiều thứ hai
+
+```{r , message=FALSE, warning=FALSE }
+fviz_contrib(res.mca.group1, choice = "var", axes = 2, top = 5)
+```
+
+
+Nếu đóng góp của các danh mục biến là đồng nhất, giá trị mong đợi sẽ là 1 / số biến categories = 1/924 = 0.1%. Đường đứt nét màu đỏ trên biểu đồ ở trên cho biết mức đóng góp trung bình dự kiến. 
+
+Đối với một chiều nhất định, bất kỳ category nào có đóng góp lớn hơn ngưỡng này đều có thể được coi là quan trọng trong việc đóng góp vào xây dựng chiều đó.
+
+```{r message=FALSE, warning=FALSE}
+fviz_contrib(res.mca.group1, choice = "var", axes = 1, top = 10)
+
+```
+
+### Nghiên cứu cá thể
+
+```{r message=FALSE, warning=FALSE}
+ind.group1 <- get_mca_ind(res.mca.group1)
+
+head(ind.group1$coord)
+```
+
+
+
+
+```{r message=FALSE, warning=FALSE}
+fviz_mca_ind(res.mca.group1)
+```
+
+
+### Đóng góp của các cá nhân vào các chiều
+
+```{r message=FALSE, warning=FALSE}
+head(ind.group1$contrib)
+```
+
+
+Vì số lượng cá nhân của chúng ta rất lớn, nên mỗi biến đóng góp vào việc xây dựng chiều cũng rất nhỏ.
+
+
+```{r message=FALSE, warning=FALSE}
+fviz_mca_ind(res.mca.group1, col.ind="contrib",alpha.ind="contrib")+
+scale_color_gradient2(low="white", mid="blue", 
+                      high="red", midpoint=0.85)+theme_minimal()
+
+```
+
+
+
+## Tiến hành phân tích trên nhóm 2
+
+## Tiến hành phân tích trên nhóm 3
+
+# III. Kết luận
