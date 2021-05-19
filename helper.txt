@@ -1,0 +1,55 @@
+#MCA cho các biến -> TÊN QUÁN (mức độ yêu thích)
+# bảng mức độ yêu thích về MÙI VỊ ... HẬU VỊ -> TỔNG THỂ biến bổ trợ thôi - TIỀN TRẢ THÊM bổ trợ thôi
+
+#THÔNG TIN CÁ NHÂN -> BIẾN BỔ TRỢ
+sample_2_68 <- dataset[,2:68]
+colnames(sample_2_68[c(1:8)]) 
+    #trong này ĐỘ TUỔI -> biến định lượng
+    #mức thu nhập -> cũng ảnh hưởng kha khá đấy.
+sample_2_68[c(1,3:8)] <-lapply(sample_2_68[c(1,3:8)], factor)
+sample_2_68[2] <-lapply(sample_2_68[2], as.numeric)#ÉP ĐỘ TUỔI
+summary(sample_2_68[2])
+#THÍCH HAY KHÔNG - LÝ DO
+colnames(sample_2_68[c(9:15)])
+#MỨC ĐỘ ẢNH HƯỞNG
+colnames(sample_2_68[c(16:30)])
+sample_2_68[c(16:25)] <-lapply(sample_2_68[c(16:30)], factor)
+sample_2_68[c(26:30)] <-lapply(sample_2_68[c(26:30)], factor)#đây là biến quanti bổ trợ
+summary(sample_2_68[c(16:30)])
+colnames(sample_2_68[c(16:30)])
+MCA(sample_2_68[c(16:25,26:30)],quali.sup=c(11:15))
+#[26] "c) Nơi Anh/ Chị thường thưởng thức cà phê mua tại quán?"
+# [27] "d) Thời điểm Anh/ Chị thường sử dụng cà phê?"
+# [28] "e) Anh/ Chị thường thưởng thức cà phê với ai?"
+# [29] "f) Loại và cách pha cà phê nào dưới đây mà Anh/ Chị THƯỜNG SỬ DỤNG NHẤT?"  
+# [30] "g) Nhiệt độ cà phê mà Anh/ Chị thường sử dụng?"
+#----thông tin phụ trợ về cà phê
+colnames(sample_2_68[c(26:30)])#thông tin bổ trợ thêm cho MCA phía sau
+sample_2_68[c(26:30)] <-lapply(sample_2_68[c(26:30)], factor)
+#----ĐỊA ĐIỂM THƯỞNG THỨC
+sample_2_68[c(31:46)] <-lapply(sample_2_68[c(31:46)], as.factor)
+colnames(sample_2_68[c(31:46)])#mức độ yêu thích
+summary(sample_2_68[c(31:46)])
+MCA(sample_2_68[c(31:46)],quali.sup=c((ncol(sample_2_68[c(31:46)])-1):ncol(sample_2_68[c(31:46)])))#Biến KHÁC bổ trợ thôi
+#----ĐẶC TÍNH CÀ PHÊ MÙI - VỊ -> PHÂN TÍCH MCA
+#----MỨC ĐỘ YÊU THÍCH - ĐIỀU CHỈNH
+colnames(sample_2_68[c(50:56)])#mức độ yêu thích -> sử dụng đánh giá PCA -> do vậy phải ép về numeric
+sample_2_68[c(50:56)] <-lapply(sample_2_68[c(50:56)], as.numeric)
+summary(sample_2_68[c(50:56)])
+PCA(sample_2_68[c(50:56)],quanti.sup=ncol(sample_2_68[c(50:56)])) #BIẾN TỔNG THỂ LÀ BIẾN BỔ TRỢ
+
+colnames(sample_2_68[c(57:62)])#điều chỉnh -> để nguyên factor
+sample_2_68[c(57:62)] <-lapply(sample_2_68[c(57:62)], factor)
+summary(sample_2_68[c(57:62)])
+sample_2_68[c(50:62)] <-lapply(sample_2_68[c(50:62)], factor)
+MCA(sample_2_68[c(1:8,57:62)],quanti.sup=2,quali.sup=c(1,3:8)) #XÉT THÊM CÁI YẾU TỐ
+  #GIỚI TÍNH
+  #NGHỀ NGHIỆP
+  #ĐỘ TUỔI
+colnames(sample_2_68[c(1:8,57:62)])#chứa thông tin cá nhân
+
+colnames(dataset[1:20])
+# [66] "o) Dạng cà phê nào dưới đây mà Anh/ Chị thường sử dụng?"
+# [67] "p) Anh/ Chị có thể chi trả bao nhiêu tiền cho 1 ly cà phê tại quán?"
+#----DẠNG - SỐ TIỀN SẴN SÀNG TRẢ
+colnames(sample_2_68[c(66:67)])
