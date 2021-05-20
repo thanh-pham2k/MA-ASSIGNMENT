@@ -33,6 +33,7 @@ Mối liên hệ giữa các biến categories
 library(factoextra)
 library(FactoMineR)
 library(Factoshiny)
+library(factoextra)
 library(readxl)
 ```
 
@@ -317,18 +318,261 @@ Vậy so với số biến kích hoạt ta sử dụng để đánh giá, con s�
 Tiểu kết: Yêu cầu về sản phẩm của người dùng ngày cũng một cao hơn và mức độ chịu chi của người dùng cũng lớn nếu sản phẩm thỏa mãn được họ.
 
 
+#### Nhóm biến 4
+
+**Mô tả về nhóm biến 4:**
+
+ [1] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Sản phẩm quen dùng]"         
+ [2] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Hương vị sản phẩm]"          
+ [3] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Mức giá hợp lí]"             
+ [4] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Khuyến mãi/ quà tặng]"       
+ [5] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Cà phê nguyên chất]"         
+ [6] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Khối lượng tịnh vừa đủ dùng]"
+ [7] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Thương hiệu nổi tiếng]"      
+ [8] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Dễ mua, dễ tiếp cận]"        
+ [9] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Công thức phối trộn]"        
+[10] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Sản phẩm mới]"               
+[11] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Bao bì đẹp]"                 
+[12] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn sản phẩm cà phê rang xay của Anh/ Chị: [Bao bì bảo quản tốt]"        
+[13] "c) Anh/ Chị thường tự pha cà phê rang xay ở đâu?"                                                                                                            
+[14] "d) Anh/ Chị thường thưởng thức cà phê với ai?"                                                                                                               
+[15] "e) Thời điểm nào dưới đây mà Anh/ Chị thường sử dụng cà phê rang xay tự pha?"                                                                                
+[16] "f) Anh/ Chị thường mua cà phê bột rang xay ở đâu?"                                                                                                           
+[17] "g) Dạng sản phẩm cà phê rang xay nào dưới đây mà Anh/ Chị thường sử dụng?"                                                                                   
+[18] "h) Anh/ Chị thường tự pha cà phê rang xay theo phương pháp nào dưới đây?"                                                                                    
+[19] "i) Với phương pháp pha trên, TỈ LỆ NƯỚC: CÀ PHÊ mà anh chị thường pha là?"                                                                                   
+[20] "i.2) Nếu pha theo sở thích cá nhân, Anh/ Chị sẽ pha TỈ LỆ NƯỚC : CÀ PHÊ là khoảng bao nhiêu?"                                                                
+[21] "j) Anh/ Chị thường bổ sung nguyên liệu nào dưới đây khi pha cà phê?"                                                                                         
+[22] "k) Nhiệt độ cà phê mà anh/chị thường sử dụng?" 
+
+Trong đó:
+	Biến kích hoạt: [1]..[12]
+	Biến bổ sung:
+		Biến định tính: [13]...[22]
+Để tiến hành phân tích, ta đưa biến về đúng định dạng:
+
+
+```{r}
+dataset[c(70:81)]<-lapply(dataset[c(70:81)],as.numeric)
+dataset[c(82:91)] <- lapply(dataset[c(82:91)],as.factor)
+```
+
+```{r}
+res.pca<-PCA(dataset[c(70:81,82:91)],quali.sup=c(13:22),graph=FALSE)
+```
+
+
+**Phân tích đám mây cá thể**
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_pca_ind(res.pca,choice="ind")
+```
+
+**Phân tích đám mây biến**
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_pca_var(res.pca,choice="var",repel=TRUE)
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_eig(res.pca, addlabels=TRUE, hjust = -0.3) +ylim(0, 50)
+```
+
+
+
+#### Nhóm biến 5
+
+**Mô tả về nhóm biến 5:**
+ [1] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Trung Nguyên]"         
+ [2] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Phúc Long]"            
+ [3] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Honee coffee]"         
+ [4] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [K Coffee]"             
+ [5] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [The Coffee House]"     
+ [6] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Mê Trang]"             
+ [7] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Urban Station Coffee]" 
+ [8] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Milano]"               
+ [9] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Nescafe]"              
+[10] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [King Coffee]"          
+[11] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Copencoffee]"          
+[12] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Archcafe]"             
+[13] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Wayne’s Coffee (Fika)]"
+[14] "l) Chọn NHỮNG THƯƠNG HIỆU Anh/ Chị TỪNG SỬ DỤNG và cho biết mức độ yêu thích của Anh/ Chị. Đối với các thương hiệu Anh/ Chị chưa từng sử dụng, vui lòng chọn “Tôi chưa sử dụng” [Hello 5 coffee]"
+
+
+Trong đó:
+	Biến kích hoạt: [1]..[14]
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+dataset[c(92:105)]<-lapply(dataset[c(92:105)],as.factor)
+res.mca <- MCA(dataset[c(92:105)],graph=FALSE)
+```
+**Phân tích đám mây cá thể**
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_mca_ind(res.mca,choice="ind")
+```
+
+
+**Phân tích đám mây biến**
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_mca_var(res.mca,choice="var",repel=TRUE)
+```
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_eig(res.mca, addlabels=TRUE,hjust = -0.3)
+```
+
+#### Nhóm biến 6
+
+[1] "o) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu n) và cho biết ĐỀ XUẤT ĐIỀU CHỈNH của Anh/ Chị đối các đặc tính đó. [Mùi cà phê bột (*)]"         
+[2] "o) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu n) và cho biết ĐỀ XUẤT ĐIỀU CHỈNH của Anh/ Chị đối các đặc tính đó. [Mùi cà phê sau khi pha (**)]"
+[3] "o) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu n) và cho biết ĐỀ XUẤT ĐIỀU CHỈNH của Anh/ Chị đối các đặc tính đó. [Màu sắc]"                    
+[4] "o) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu n) và cho biết ĐỀ XUẤT ĐIỀU CHỈNH của Anh/ Chị đối các đặc tính đó. [Vị đắng]"                    
+[5] "o) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu n) và cho biết ĐỀ XUẤT ĐIỀU CHỈNH của Anh/ Chị đối các đặc tính đó. [Vị chua]"                    
+[6] "o) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu n) và cho biết ĐỀ XUẤT ĐIỀU CHỈNH của Anh/ Chị đối các đặc tính đó. [Hậu vị (***)]"               
+[7] "o) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu n) và cho biết ĐỀ XUẤT ĐIỀU CHỈNH của Anh/ Chị đối các đặc tính đó. [Tổng thể]"  
+
+Trong đó:
+	Biến kích hoạt: [1]..[6]
+	Biến bổ sung:
+		Biến định lượng: [7]
+Để tiến hành phân tích, ta đưa biến về đúng định dạng:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+dataset[c(111:117)]<-lapply(dataset[c(111:117)],as.numeric)
+res.pca <- PCA(dataset[111:117],quanti.sup=7,graph=FALSE)
+```
+
+**Phân tích đám mây cá thể**
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_pca_ind(res.pca,choice="ind")
+```
+
+**Phân tích đám mây biến**
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_pca_var(res.pca,choice="var",repel=TRUE)
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_eig(res.pca, addlabels=TRUE,hjust = -0.3)
+```
+
+
+
+
+
 ## Tiến hành phân tích trên nhóm 2
+ở nhóm biến này, ta phân tích một số đặc tính và mức độ quan tâm của người dùng đến sản phẩm cà phê HÒA TAN 2 IN 1
+
+#### Nhóm biến 1
+**Mô tả về nhóm biến 1:**
+
+[1] "Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của cà phê HÒA TAN 2IN1 mà Anh/ Chị thường sử dụng nhất. [Mùi Cà phê sau khi pha (*)]"
+[2] "Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của cà phê HÒA TAN 2IN1 mà Anh/ Chị thường sử dụng nhất. [Vị đắng]"                   
+[3] "Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của cà phê HÒA TAN 2IN1 mà Anh/ Chị thường sử dụng nhất. [Vị chua]"                   
+[4] "Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của cà phê HÒA TAN 2IN1 mà Anh/ Chị thường sử dụng nhất. [Vị ngọt]"                   
+[5] "Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của cà phê HÒA TAN 2IN1 mà Anh/ Chị thường sử dụng nhất. [Hậu vị (**)]"               
+[6] "Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của cà phê HÒA TAN 2IN1 mà Anh/ Chị thường sử dụng nhất. [Tổng thể]"  
+
+Trong đó:
+	Biến kích hoạt: [1]..[5]
+	Biến bổ sung:
+		Biến định lượng: [6]
+Để tiến hành phân tích, ta đưa biến về đúng định dạng:
 
 
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+dataset[c(190:195)]<-lapply(dataset[c(190:195)],as.numeric)
+```
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+res.pca<-PCA(dataset[c(190:195)],graph=FALSE)
+```
+
+#### Nhóm biến 2
+**Mô tả về nhóm biến 2:**
+[1] "Anh/ Chị muốn cải thiện các đặc tính đó như thế nào? [Mùi Cà phê sau khi pha (*)]...196"
+[2] "Anh/ Chị muốn cải thiện các đặc tính đó như thế nào? [Vị đắng]...197"                   
+[3] "Anh/ Chị muốn cải thiện các đặc tính đó như thế nào? [Vị chua]...198"                   
+[4] "Anh/ Chị muốn cải thiện các đặc tính đó như thế nào? [Vị ngọt]"                         
+[5] "Anh/ Chị muốn cải thiện các đặc tính đó như thế nào? [Hậu vị (**)]...200"
+Trong đó:
+	Biến kích hoạt: [1]..[4]
+  Biến bổ sung:
+		Biến định tính: [5]
+		
+Để tiến hành phân tích, ta đưa biến về đúng định dạng:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+dataset[c(196:200)]<-lapply(dataset[c(196:200)],as.factor)
+```
+
+
+
+**Phân tích đám mây cá thể**
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_mca_ind(res.mca,choice="ind",repel=TRUE)
+```
+
+**Phân tích đám mây biến**
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_mca_var(res.mca,choice="var",repel=TRUE)
+```
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_eig(res.mca, addlabels=TRUE,hjust = -0.3)
+```
+
+### Nhóm biến 3
+**Mô tả về nhóm biến 2:**
+[1] "Điều gì anh/chị quan tâm khi chọn mua sản phẩm cà phê hòa tan 2in1? [Sản phẩm quen dùng]" 
+[2] "Điều gì anh/chị quan tâm khi chọn mua sản phẩm cà phê hòa tan 2in1? [Mùi vị]"             
+[3] "Điều gì anh/chị quan tâm khi chọn mua sản phẩm cà phê hòa tan 2in1? [Giá cả]"             
+[4] "Điều gì anh/chị quan tâm khi chọn mua sản phẩm cà phê hòa tan 2in1? [Thương hiệu]"        
+[5] "Điều gì anh/chị quan tâm khi chọn mua sản phẩm cà phê hòa tan 2in1? [Quảng cáo, tiếp thị]"
+[6] "Điều gì anh/chị quan tâm khi chọn mua sản phẩm cà phê hòa tan 2in1? [Mẫu mã]"             
+[7] "Điều gì anh/chị quan tâm khi chọn mua sản phẩm cà phê hòa tan 2in1? [An toàn thực phẩm]"  
+[8] "Điều gì anh/chị quan tâm khi chọn mua sản phẩm cà phê hòa tan 2in1? [Cà phê nguyên chất]" 
+[9] "Điều gì anh/chị quan tâm khi chọn mua sản phẩm cà phê hòa tan 2in1? [Tiện ích sử dụng]"   
+
+Trong đó:
+	Biến kích hoạt: [1]..[9]
+Để tiến hành phân tích, ta đưa biến về đúng định dạng:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+dataset[c(201:209)]<-lapply(dataset[c(201:209)],as.numeric)
+```
+
+
+**Phân tích đám mây cá thể**
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_pca_ind(res.pca,choice="ind")
+```
+**Phân tích đám mây biến**
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_pca_var(res.pca,choice="var",repel=TRUE)
+```
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_eig(res.pca, addlabels=TRUE,hjust = -0.3)
+```
 
 ## Tiến hành phân tích trên nhóm 3
 
 
 
+
 # III. Kết luận
 
-Trong tập dữ liệu chứa rất nhiều missing value, vì vậy trong quá trình đánh giá. Chúng em không tránh khỏi được những sai sót và thời gian cũng có hạn. Đây là tất cả những nổ lực của em cũng như các bạn trong nhóm. Nếu có điểm nào chưa tốt, mong thầy cho chúng em xin thêm phản hồi để rút kinh nghiệm cho sau này. Cảm ơn thầy!
-
+Trong tập dữ liệu chứa rất nhiều missing value, vì vậy trong quá trình đánh giá. Chúng em có tiền xử lý, để đánh giá nếu một nhóm biến nào chúng em phân tích chứa nhiều missing value. Thì khả năng cao nhóm đó khi đưa ra phân tích sẽ không mang lại nhiều ý nghĩa. Do vậy chúng em có cắt bỏ bớt giúp quá trình tiến hành áp dụng các kĩ thuật phân tích gọn nhẹ hơn. Ngoài ra, chúng em có thể không tránh khỏi được những sai sót và thời gian cũng có hạn. Đây là tất cả những nổ lực của em cũng như các bạn trong nhóm. Nếu có điểm nào chưa tốt, mong thầy cho chúng em xin thêm phản hồi để rút kinh nghiệm cho sau này. Chúng em cảm ơn thầy!
 
 
 
