@@ -4,7 +4,6 @@ author: "Thành 10 ngón"
 output:
   html_document: default
   fig_height: 15 
-
 ---
 Bộ dữ liệu này chứa 1306 cá nhân và 261 biến, được phân thành 3 nhóm chính để phân tích
 
@@ -352,12 +351,12 @@ Trong đó:
 Để tiến hành phân tích, ta đưa biến về đúng định dạng:
 
 
-```{r}
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
 dataset[c(70:81)]<-lapply(dataset[c(70:81)],as.numeric)
 dataset[c(82:91)] <- lapply(dataset[c(82:91)],as.factor)
 ```
 
-```{r}
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
 res.pca<-PCA(dataset[c(70:81,82:91)],quali.sup=c(13:22),graph=FALSE)
 ```
 
