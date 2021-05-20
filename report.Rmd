@@ -3,6 +3,8 @@ title: "KHẢO SÁT NHU CẦU SỬ DỤNG CÀ PHÊ VIỆT NAM"
 author: "Thành 10 ngón"
 output:
   html_document: default
+  fig_height: 15 
+
 ---
 Bộ dữ liệu này chứa 1306 cá nhân và 261 biến, được phân thành 3 nhóm chính để phân tích
 
@@ -11,7 +13,6 @@ Nhóm 1: Chứa thông tin cá nhân của người được khảo sát và th�
 Nhóm 2: Chứa thông tin cá nhân của người được khảo sát và thông tin liên quan đến cà phê HÒA TAN 2IN1
 
 Nhóm 3: Chứa thông tin cá nhân của người được khảo sát và thông tin liên quan đến cà phê HÒA TAN 3IN1
-- - -
 
 # I. Mô tả phương pháp phân tích.
 
@@ -57,166 +58,281 @@ Trong 61 biến:
   --- Biến kích hoạt: các biến còn lại được sử dụng làm biến kích hoạt
   
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
-dataset.group1 <- dataset[c(2:47, 51:63,67:68)]
-
-ncol(dataset.group1)
+dataset.group1 <- dataset[c(2:68)]
 dim(dataset.group1)
-
-cols <- c(1,3:ncol(dataset.group1))
-dataset.group1[cols] <-lapply(dataset.group1[cols], factor)
-dataset.group1[2] <- as.numeric(unlist(dataset.group1[2]))
-
-res.mca.group1 <- MCA(dataset.group1,quanti.sup = 2,quali.sup=c(1,16:25,31:59),graph=FALSE)
-
 ```
 
-### Tóm tắt kết quả đầu ra MCA của nhóm 1
+Trong nhóm 1 này, chúng ta phân tách ra từng nhóm con và áp dụng kĩ thuật tương ứng trên từng nhóm
+
+#### Nhóm biến 1
+
+**Mô tả về nhóm biến 1:**
+
+[1] "2.1. Anh/ Chị có sử dụng cà phê không?"                                                                                                          
+[2] "k.1) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu j) [Mùi cà phê (*)]"
+[3] "k.1) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu j) [Màu sắc]"       
+[4] "k.1) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu j) [Độ đậm (**)]"   
+[5] "k.1) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu j) [Vị đắng]"       
+[6] "k.1) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu j) [Vị chua]"       
+[7] "k.1) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu j) [Hậu vị (***)]"  
+[8] "k.1) Hãy đánh giá MỨC ĐỘ YÊU THÍCH đối với một số đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu j) [Tổng thể]"
+Trong đó:
+	Biến kích hoạt: [2] ... [7]
+	Biến bổ sung:
+		Biến định lượng: [1]
+		Biến định tính: [8]
+
+**Trước khi tiến hành phân tích trên nhóm biến 1, ta cần đưa biến về đúng định dạng.**
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+dataset.group1[9] <- lapply(dataset.group1[9], as.factor)
+dataset.group1[c(50:56)] <-lapply(dataset.group1[c(50:56)], as.numeric)
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+res.pca.g11 <- PCA(dataset.group1[c(9,50:56)],quanti.sup=8,quali.sup=1,graph=FALSE)
+```
+
+**Phân tích đám mây cá thể**
+
+Đầu tiên ta phân tích xem các cá thể trong tập dữ liệu ở nhóm cà phê hòa tan, phân bố như thế nào trên mặt phẳng chính thứ nhất
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_pca_ind(res.pca.g11, col.ind = "cos2",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),repel = TRUE )
+```
+
+Để biết được phân bố các cá thể chi tiết hơn, ta sử dụng câu lệnh sau:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+
+fviz_pca_ind(res.pca.g11,ind="cos2",habillage=1,repel=TRUE)
+```
+
+Ở hình trên ta thấy, cá thể KHÔNG sử dụng cà phê, phân bố rất gần tâm. Do vậy khi phân tích trên mặt phẳng chính thư nhất này. Chúng không mang lại nhiều thông tin
+Ta sẽ kiểm tra xem, vậy thì với mức ý nghĩa cos2 > 0.5, phân bố thực sự của chúng sẽ như thế nào?
+
+```{r echo=TRUE, message=FALSE, warning=FALSE ,fig.height = 8,out.width="200%"}
+fviz_pca_ind(res.pca.g11,ind="cos2",select.ind=list(cos2 = 0.5),habillage=1,repel=TRUE)
+```
+
+Rõ ràng ta thấy ở nhóm này, ta thấy nó chỉ biểu diễn sự thay đổi của cá thể có sử dụng cà phê. Ở đồ thị trên ta còn thấy thêm một điều nữa là góc phần tư thứ nhất và góc phần tư thứ tư phân bố mật độ của cá thể dày đặc hơn. Từ cơ sở đó, ta sẽ đi tiến hành phân tích mối tương quan của cá thể với vòng tròn tương quan
+
+
+**Phân tích đám mây biến**
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_pca_var(res.pca.g11,col.var = "contrib",gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),repel = TRUE)
+```
+
+Dựa vào hình này ta thấy, các biến của chúng ta phân tích có tương quan mạnh với thành phần chính thứ nhất.
+Ngoài ra biến tổng thể (biến bổ sung) cũng tương quan mạnh với thành phần chính này.
+Để biết được mặt phẳng chính này biểu diễn được bao nhiêu sự biến đổi, ta minh họa bằng hình vẽ sau:
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_eig(res.pca.g11,addlabels=TRUE, hjust = -0.3)
+```
+
+Rõ ràng ở trên hình vẽ ta thấy, mặt phẳng chính thứ nhất biểu diễn được 81.4% lượng thông tin biến đổi. Từ đó chúng ta không cần phân tích thêm mặt phẳng chính thứ hai.
+Câu hỏi đặt ra, vậy biến nào đóng lớn để xây dựng mặt phẳng chính thứ nhất:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE,fig.height = 8,out.width="200%" }
+fviz_contrib(res.pca.g11, choice = "var", axes = 1,2,top=5)
+```
+
+
+Nhìn vào đồ thị ta thấy được. Các biến như (*Độ Đậm*, *Vị Đắng*, *Màu sắc*, *Mùi cà phê*) tác động lớn đến việc xây dựng mặt phẳng chính này.
+Tiểu kết: Vậy nhóm cà phê rang xay, để tạo nên một ly cà phê ngon phù hợp với nhu cầu người tiêu dùng. Ta cần quan tâm đến rất nhiều tiêu chí về chất lượng sản phẩm.
+
+
+#### Nhóm biến 2
+
+**Mô tả về nhóm biến 2:**
+
+1] "1.1. Giới tính:"                                                                                                                                         
+ [2] "1.2. Độ tuổi:"                                                                                                                                           
+ [3] "1.3. Anh/ Chị hiện đang:"                                                                                                                                
+ [4] "1.4. Trình độ học vấn của Anh/ Chị?"                                                                                                                     
+ [5] "1.5. Hiện tại, anh chị đang công tác ở tỉnh/ thành nào?"                                                                                                 
+ [6] "1.6. Phần lớn thời gian, anh chị sống ở tỉnh/ thành nào?"                                                                                                
+ [7] "1.7. Công việc hiện tại của Anh/ Chị là gì?"                                                                                                             
+ [8] "1.8. Mức thu nhập tính trên tháng hiện tại của Anh/ Chị là khoảng bao nhiêu?"                                                                            
+ [9] "2.1. Anh/ Chị có sử dụng cà phê không?"                                                                                                                  
+[10] "2.2. Lý do nào dưới đây mà Anh/ Chị KHÔNG sử dụng cà phê?"                                                                                               
+[11] "2.3. Lý do nào d₫ưới đây mà Anh/ Chị SỬ DỤNG cà phê?"                                                                                                     
+[12] "2.4. Loại cà phê nào dưới đây Anh/ Chị sử dụng NHIỀU NHẤT?"                                                                                              
+[13] "3.1. Tần suất sử dụng cà phê rang xay của Anh/ Chị là?"                                                                                                  
+[14] "3.2. Kiểu uống cà phê rang xay Anh/ Chị  THƯỜNG SỬ DỤNG NHẤT là:"                                                                                        
+[15] "a) Lý do nào dưới đây mà Anh/ Chị thường sử dụng cà phê mua tại quán?"                                                                                   
+[16] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Quán quen]"                           
+[17] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Hương vị sản phẩm]"                   
+[18] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Khuyến mãi]"                          
+[19] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Chất lượng sản phẩm]"                 
+[20] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Vị trí thuận tiện]"                   
+
+[21] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Thương hiệu nổi tiếng]"               
+[22] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Mức giá hợp lí]"                      
+[23] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Quán mới]"                            
+[24] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Không gian quán]"                     
+[25] "b) Hãy cho biết MỨC ĐỘ QUAN TRỌNG của những yếu tố dưới đây ảnh hưởng đến việc lựa chọn quán cà phê của Anh/ Chị: [Đánh giá từ người quen/ truyền thông]"
+[26] "c) Nơi Anh/ Chị thường thưởng thức cà phê mua tại quán?"                                                                                                 
+[27] "d) Thời điểm Anh/ Chị thường sử dụng cà phê?"                                                                                                            
+[28] "e) Anh/ Chị thường thưởng thức cà phê với ai?"                                                                                                           
+[29] "f) Loại và cách pha cà phê nào dưới đây mà Anh/ Chị THƯỜNG SỬ DỤNG NHẤT?"                                                                                
+[30] "g) Nhiệt độ cà phê mà Anh/ Chị thường sử dụng?"
+
+Trong đó:
+	Biến kích hoạt: [16] ... [25]
+	Biến bổ sung:
+		Biến định lượng: [2]
+		Biến định tính: [1], [3]...[15] và [26]...[30]
+
+Để tiến hành phân tích, ta đưa biến về đúng định dạng:
 
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
-#(res.mca.group1,nb.dec=2,ncp=2)
+dataset.group1[c(1,3:15)] <-lapply(dataset.group1[c(1,3:15)], as.factor)
+dataset.group1[2] <-lapply(dataset.group1[2], as.numeric)
+dataset.group1[c(16:30)] <-lapply(dataset.group1[c(16:30)], as.factor)
+dataset.group1[c(26:30)] <-lapply(dataset.group1[c(26:30)], as.factor)
 ```
 
-Kết quả của hàm summary chứa 4 bảng:
-
---- **Bảng 1** - Giá trị riêng: bảng 1 chứa các phương sai và tỷ lệ phần trăm phương sai được giữ lại theo từng thứ nguyên.
-
---- **Bảng 2** chứa tọa độ, đóng góp và cos2 (chất lượng đại diện [trong 0-1]) của 10 cá nhân hoạt động đầu tiên trên các chiều 1 và 2.
-
---- **Bảng 3** chứa tọa độ, đóng góp và cos2 (chất lượng đại diện [trong 0-1]) của 10 biến kích hoạt categories đầu tiên trên các chiều 1 và 2. Bảng này cũng chứa một cột được gọi là v.test. Giá trị của v.test thường bao gồm từ 2 đến -2. Đối với một biến category cho trước, nếu giá trị tuyệt đối của v.test cao hơn 2, điều này có nghĩa là tọa độ khác 0 đáng kể.
-
---- **Bảng 4** - các biến phân loại (eta2): chứa mối tương quan bình phương giữa mỗi biến và chiều.
-
-
-### Giải thích kết quả đầu ra MCA cho nhóm 1
-
-```{r}
-eigenvalue.group1 <- get_eigenvalue(res.mca.group1)
-head(round(eigenvalue.group1, 2))
-
-```
-
-
-### Ta có thể vẽ minh họa scree
-```{r}
-fviz_screeplot(res.mca.group1)
-```
-
-
-### Biểu đồ phân tán MCA: Biplot của các cá nhân và biến categories
-
-
-
-
-### Biến categories
-```{r}
-var.group1 <- get_mca_var(res.mca.group1)
-```
-### Tương quan giữa các biến và các thành phần chính
-
-
-```{r}
-fviz_mca_var(res.mca.group1, select.var=list(contrib=10),repel=TRUE,col.var = "cos2", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), ggtheme = theme_minimal())
-
-```
-
-Biểu đồ trên giúp xác định các biến có tương quan nhất với mỗi chiều. Tương quan bình phương giữa các biến và các chiều được sử dụng làm tọa độ.
-
-Có thể thấy rằng, các biến `Giá rẻ hơn nước ép`, `Sở thích, Thói quen/ Nghiện cà phê, Hỗ trợ công việc (Kích thích tỉnh táo, tập trung,…)` và `Không gian phù hợp` có tương quan nhiều nhất với chiều 1. Tương tự, các biến  `Giá rẻ hơn nước ép` và `Sở thích, Thói quen/ Nghiện cà phê, Hỗ trợ công việc (Kích thích tỉnh táo, tập trung,…)` có tương quan nhiều nhất với chiều 2.
-
-Biểu đồ trên cho thấy một mẫu chung trong dữ liệu. Hàng (cá nhân) được biểu thị bằng các điểm màu xanh lam và cột (biến category) bằng hình tam giác màu đỏ.
-
-Khoảng cách giữa bất kỳ điểm hàng hoặc điểm cột nào cho phép đo mức độ giống nhau (hoặc không giống nhau) của chúng.
-
-Các điểm hàng có cấu hình tương tự được đóng trên bản đồ yếu tố. Điều này cũng đúng đối với các điểm cột.
-
-
-
-
-### Tọa độ của các biến categories
-
-```{r}
-head(round(var.group1$coord,2))
-
-```
-
-
-```{r}
-fviz_mca_var(res.mca.group1, col.var="black", shape.var = 15,select.var=list(contrib=20),repel=TRUE)
-```
-
-### Đóng góp của các biến categories vào các chiều
-
-```{r}
-head(round(var.group1$contrib,2))
-```
-
-
-```{r}
-categories <- rownames(var.group1$coord)
-length(categories)
-```
-
-Mức độ đóng góp của mỗi biến categories trên chiều thứ nhất
-
-```{r echo=FALSE, message=FALSE, warning=FALSE }
-fviz_contrib(res.mca.group1, choice = "var", axes = 1, top = 5)
-```
-
-
-Mức độ đóng góp của mỗi biến categories trên chiều thứ hai
-
-```{r , message=FALSE, warning=FALSE }
-fviz_contrib(res.mca.group1, choice = "var", axes = 2, top = 5)
-```
-
-
-Nếu đóng góp của các danh mục biến là đồng nhất, giá trị mong đợi sẽ là 1 / số biến categories = 1/924 = 0.1%. Đường đứt nét màu đỏ trên biểu đồ ở trên cho biết mức đóng góp trung bình dự kiến. 
-
-Đối với một chiều nhất định, bất kỳ category nào có đóng góp lớn hơn ngưỡng này đều có thể được coi là quan trọng trong việc đóng góp vào xây dựng chiều đó.
-
-```{r message=FALSE, warning=FALSE}
-fviz_contrib(res.mca.group1, choice = "var", axes = 1, top = 10)
-
-```
-
-### Nghiên cứu cá thể
-
-```{r message=FALSE, warning=FALSE}
-ind.group1 <- get_mca_ind(res.mca.group1)
-
-head(ind.group1$coord)
+Ta tiến hành phân tích MCA cho nhóm biến 2
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+res.mca.g11 <- MCA(dataset.group1[c(1:30)],quanti.sup=2,quali.sup=c(1,3:15,26:30),graph=FALSE)
 ```
 
 
 
+**Phân tích đám mây cá thể**
+```{r echo=TRUE, message=FALSE, warning=FALSE,  ,fig.height = 8,out.width="200%"}
+fviz_mca_ind(res.mca.g11, col.ind = "cos2", 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             ggtheme = theme_minimal())
+```
 
-```{r message=FALSE, warning=FALSE}
-fviz_mca_ind(res.mca.group1)
+Dựa vào đồ thị này ta thấy được, các cá thể của chúng ta có tương quan chặt với thành phần chính thứ nhất.
+Ta thấy các cá thể phân bố nhiều trên chiều thứ nhất. Từ đó chúng ta sẽ khám phá xem, vậy thì các cá thể này với các biến kích hoạt. Chúng có mối liên hệ như thế nào?
+
+**Phân tích đám mây biến**
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_mca_var(res.mca.g11, choice = "mca.cor", repel= TRUE)
+```
+
+Từ độ thị với đám mây cá thể, ta thấy được. Giữa biến và cá thể có mối tương quan chặt với nhau. Có nghĩa khi một người uống cà phê. Ngoài những thông tin về hương liệu, mùi vị. Thì chúng còn bị chi phối bởi những yếu tố khác. Ví dụ như *Không gian quán*, *Vị trí thuận tiện*, *Giá cả*, *Truyền thông*...
+
+Ngoài những tác nhân biến kích hoạt, những tác nhân khác cũng tác động lên hành vi sử dụng cà phê như *Uống tại quán*, *Mang đi*, *Uống với bạn bè*, *đồng nghiệp*, ...".
+
+Để kiểm chứng mặt phẳng chính này mô tả có khách quan hay không, ta sẽ biến hành kiểm tra xem mức độ biểu diễn thông tin của chúng trên mặt phẳng chính thứ nhất.
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_screeplot(res.mca.g11, addlabels = TRUE, ylim = c(0, 45))
+```
+
+dựa vào hình ta thấy được, mặt phẳng chính thứ nhất (chứa hai thành phần chính thứ nhất và thành phần chính thứ hai) biểu được được 30.9% lượng thông tin biến đổi.
+Vậy so với số biến kích hoạt ta sử dụng để đánh giá, con số này khá lớn nên ta không cần phân tích mặt phẳng chính thứ hai, thứ ba ...
+
+Tiểu kết: Tiêu chí để lựa chọn một ly cà phê, không đơn thuần chỉ là bản chất của sản phẩm và còn phụ thuộc vào rất nhiều yếu tố xung quanh. Đặc biệt là hành vi của người sử dụng.
+
+
+
+#### Nhóm biến 3
+
+**Mô tả về nhóm biến 3:**
+
+[1] "1.1. Giới tính:"                                                                                                                                   
+ [2] "1.2. Độ tuổi:"                                                                                                                                     
+ [3] "1.3. Anh/ Chị hiện đang:"                                                                                                                          
+ [4] "1.4. Trình độ học vấn của Anh/ Chị?"                                                                                                               
+ [5] "1.5. Hiện tại, anh chị đang công tác ở tỉnh/ thành nào?"                                                                                           
+ [6] "1.6. Phần lớn thời gian, anh chị sống ở tỉnh/ thành nào?"                                                                                          
+ [7] "1.7. Công việc hiện tại của Anh/ Chị là gì?"                                                                                                       
+ [8] "1.8. Mức thu nhập tính trên tháng hiện tại của Anh/ Chị là khoảng bao nhiêu?"                                                                      
+ [9] "k.2) Theo Anh/ Chị, các đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu k) nên điều chỉnh như thế nào? [Mùi cà phê (*)]"
+[10] "k.2) Theo Anh/ Chị, các đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu k) nên điều chỉnh như thế nào? [Màu sắc]"       
+[11] "k.2) Theo Anh/ Chị, các đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu k) nên điều chỉnh như thế nào? [Độ đậm (**)]"   
+[12] "k.2) Theo Anh/ Chị, các đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu k) nên điều chỉnh như thế nào? [Vị đắng]"       
+[13] "k.2) Theo Anh/ Chị, các đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu k) nên điều chỉnh như thế nào? [Vị chua]"       
+[14] "k.2) Theo Anh/ Chị, các đặc tính của sản phẩm cà phê mà Anh/ Chị thường sử dụng nhất (Đề cập ở câu k) nên điều chỉnh như thế nào? [Hậu vị (***)]"  
+[15] "o) Dạng cà phê nào dưới đây mà Anh/ Chị thường sử dụng?"                                                                                           
+[16] "p) Anh/ Chị có thể chi trả bao nhiêu tiền cho 1 ly cà phê tại quán?"
+Trong đó:
+	Biến kích hoạt: [8] ... [14]
+	Biến bổ sung:
+		Biến định lượng: [2]
+		Biến định tính: [1], [3]...[8] và [15]...[16]
+Để tiến hành phân tích, ta đưa biến về đúng định dạng:
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+dataset.group1[c(50:62)] <-lapply(dataset.group1[c(50:62)], factor)
+dataset.group1[c(66:67)] <-lapply(dataset.group1[c(66:67)], as.factor)
+
+```
+
+Tiến hành phân tích MCA trên nhóm này.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+res.mca.m12 <- MCA(dataset.group1[c(1:8,57:62,66:67)],quanti.sup=2,quali.sup=c(1,3:8,15:16),graph=FALSE)
 ```
 
 
-### Đóng góp của các cá nhân vào các chiều
-
-```{r message=FALSE, warning=FALSE}
-head(ind.group1$contrib)
-```
-
-
-Vì số lượng cá nhân của chúng ta rất lớn, nên mỗi biến đóng góp vào việc xây dựng chiều cũng rất nhỏ.
-
-
-```{r message=FALSE, warning=FALSE}
-fviz_mca_ind(res.mca.group1, col.ind="contrib",alpha.ind="contrib")+
-scale_color_gradient2(low="white", mid="blue", 
-                      high="red", midpoint=0.85)+theme_minimal()
+**Phân tích đám mây cá thể**
+```{r echo=TRUE, message=FALSE, warning=FALSE ,fig.height = 8,out.width="200%"}
+fviz_mca_ind(res.mca.m12, col.ind = "cos2", 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             ggtheme = theme_minimal())
 
 ```
 
+
+Dựa vào đồ thị này ta thấy được, các cá thể của chúng ta có tương quan chặt với thành phần chính thứ nhất.
+
+Ta thấy các cá thể phân bố nhiều trên chiều thứ nhất. Từ đó chúng ta sẽ khám phá xem, vậy thì các cá thể này với các biến kích hoạt. Chúng có mối liên hệ như thế nào?
+
+**Phân tích đám mây biến**
+```{r echo=TRUE, message=FALSE, warning=FALSE,fig.height = 8,out.width="200%"}
+fviz_mca_var(res.mca.m12, choice = "mca.cor", repel= TRUE)
+```
+
+Từ độ thị với đám mây cá thể, ta thấy được. Giữa biến và cá thể có mối tương quan chặt với nhau. Có nghĩa yêu cầu của người dùng dành cho sản phẩm mình sử dụng cũng cao. Từ những thông tin trên, chúng ta có thể biết được. Mình nên điều chỉnh như thế nào cho phù hợp với nhóm khách hàng mà ta hướng tới. 
+
+Ngoài những tác nhân biến kích hoạt, các biến bổ trợ như *Số tiền sẵn sàng chi trả cho 1 ly cà phê*, *Dạng cà phê sử dụng*. Khi chất lượng sản phẩm và các yếu tố liên quan được điều chỉnh phù hợp. Người dùng sẵn sàng bỏ ra một số tiền tương ứng với nhu cầu của họ
+
+Để kiểm chứng mặt phẳng chính này mô tả có khách quan hay không, ta sẽ biến hành kiểm tra xem mức độ biểu diễn thông tin của chúng trên mặt phẳng chính thứ nhất.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE  ,fig.height = 8,out.width="200%"}
+fviz_screeplot(res.mca.m12, addlabels = TRUE, ylim = c(0, 45))
+```
+
+
+Dựa vào hình ta thấy được, mặt phẳng chính thứ nhất (chứa hai thành phần chính thứ nhất và thành phần chính thứ hai) biểu được được 45.5% lượng thông tin biến đổi.
+
+Vậy so với số biến kích hoạt ta sử dụng để đánh giá, con số này khá lớn nên ta không cần phân tích mặt phẳng chính thứ hai, thứ ba ...
+
+Tiểu kết: Yêu cầu về sản phẩm của người dùng ngày cũng một cao hơn và mức độ chịu chi của người dùng cũng lớn nếu sản phẩm thỏa mãn được họ.
 
 
 ## Tiến hành phân tích trên nhóm 2
 
+
+
 ## Tiến hành phân tích trên nhóm 3
 
+
+
 # III. Kết luận
+
+Trong tập dữ liệu chứa rất nhiều missing value, vì vậy trong quá trình đánh giá. Chúng em không tránh khỏi được những sai sót và thời gian cũng có hạn. Đây là tất cả những nổ lực của em cũng như các bạn trong nhóm. Nếu có điểm nào chưa tốt, mong thầy cho chúng em xin thêm phản hồi để rút kinh nghiệm cho sau này. Cảm ơn thầy!
+
+
+
+
+
+
+
+
